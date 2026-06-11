@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mind Over Matter — TFG STEM Research Project</title>
+  <style>
+    /* =====================================================
+       RESET & CSS VARIABLES
+       ===================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:      #0d1b3e;
+      --navy-mid:  #142252;
+      --purple:    #5c35a8;
+      --purple-lt: #7b52d4;
+      --violet:    #9b59d4;
+      --teal:      #1fc8b0;
+      --teal-lt:   #4de0c9;
+      --white:     #ffffff;
+      --off-white: #f0f2fa;
+      --card-bg:   rgba(255,255,255,0.05);
+      --card-border: rgba(255,255,255,0.12);
+      --text-main: #e8eaf6;
+      --text-muted: rgba(232,234,246,0.65);
+      --shadow-glow: 0 0 28px rgba(92,53,168,0.45);
+      --shadow-card: 0 8px 32px rgba(0,0,0,0.35);
+      --radius:    16px;
+      --radius-sm: 10px;
+      --trans:     0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, var(--navy) 0%, #1a1060 50%, #0d2a3e 100%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(92,53,168,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(31,200,176,0.10) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* =====================================================
+       PROJECT HEADER BANNER
+       ===================================================== */
+    .project-banner {
+      background: linear-gradient(90deg, var(--purple) 0%, var(--teal) 100%);
+      text-align: center;
+      padding: 7px 16px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--white);
+    }
+
+    /* =====================================================
+       NAVIGATION
+       ===================================================== */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: rgba(13,27,62,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 64px;
+      gap: 12px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--white);
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+    }
+
+    .nav-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--purple-lt), var(--teal));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 0 16px rgba(92,53,168,0.6);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-links { display: flex; gap: 4px; }
+
+    .nav-btn {
+      background: transparent;
+      border: 2px solid transparent;
+      color: var(--text-muted);
+      padding: 7px 16px;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--trans);
+      white-space: nowrap;
+    }
+
+    .nav-btn:hover {
+      color: var(--white);
+      background: rgba(255,255,255,0.07);
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(135deg, var(--purple), var(--teal));
+      color: var(--white);
+      box-shadow: 0 0 18px rgba(92,53,168,0.5);
+    }
+
+    /* ── Language Toggle ── */
+    .lang-toggle {
+      display: flex;
+      gap: 3px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 50px;
+      padding: 3px;
+      flex-shrink: 0;
+    }
+
+    .lang-btn {
+      padding: 5px 13px;
+      border-radius: 50px;
+      border: none;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--trans);
+      letter-spacing: 0.3px;
+    }
+
+    /* Green when this language is active */
+    .lang-btn.lang-on  { background: #2e7d32; color: #ffffff; box-shadow: 0 0 10px rgba(46,125,50,0.5); }
+    /* Gray when this language is inactive */
+    .lang-btn.lang-off { background: rgba(255,255,255,0.13); color: rgba(255,255,255,0.5); }
+
+    /* =====================================================
+       SCREEN SWITCHING
+       ===================================================== */
+    .screen { display: none; position: relative; z-index: 1; }
+    .screen.active { display: block; animation: fadeUp 0.4s var(--trans) forwards; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* =====================================================
+       PAGE HEADER
+       ===================================================== */
+    .page-header { text-align: center; padding: 64px 24px 48px; }
+
+    .page-tag {
+      display: inline-block;
+      background: rgba(92,53,168,0.25);
+      border: 1px solid rgba(155,89,212,0.4);
+      padding: 6px 20px;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--teal-lt);
+      margin-bottom: 18px;
+    }
+
+    .page-title {
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 14px;
+      background: linear-gradient(135deg, #ffffff 30%, var(--teal-lt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .page-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 580px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* =====================================================
+       CONTAINER
+       ===================================================== */
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: 48px 0; }
+
+    .section-title { font-size: 1.6rem; font-weight: 800; color: var(--white); margin-bottom: 8px; }
+    .section-sub   { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 32px; line-height: 1.65; }
+
+    /* =====================================================
+       GLASS CARDS
+       ===================================================== */
+    .glass-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 28px;
+      box-shadow: var(--shadow-card);
+      transition: transform var(--trans), box-shadow var(--trans);
+    }
+
+    .glass-card:hover { transform: translateY(-5px); box-shadow: 0 16px 48px rgba(0,0,0,0.45), 0 0 0 1px rgba(92,53,168,0.3); }
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+    .card-icon { font-size: 2rem; margin-bottom: 14px; }
+    .glass-card h3 { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+    .glass-card p  { font-size: 0.88rem; color: var(--text-muted); line-height: 1.65; }
+    .accent-top-purple { border-top: 3px solid var(--purple-lt); }
+    .accent-top-teal   { border-top: 3px solid var(--teal); }
+    .accent-top-violet { border-top: 3px solid var(--violet); }
+
+    /* Stat row */
+    .stat-row { display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; margin: 36px 0 44px; }
+    .stat { text-align: center; }
+    .stat-num {
+      font-size: 2.2rem; font-weight: 900;
+      background: linear-gradient(to right, var(--teal-lt), var(--violet));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .stat-label { font-size: 0.74rem; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; margin-top: 2px; }
+
+    /* =====================================================
+       BUTTONS
+       ===================================================== */
+    .btn-glow {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, var(--purple), var(--teal));
+      color: var(--white); padding: 16px 44px; border: none; border-radius: 50px;
+      font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      box-shadow: 0 0 24px rgba(92,53,168,0.55), 0 6px 20px rgba(0,0,0,0.3);
+      transition: var(--trans); text-decoration: none; letter-spacing: 0.3px;
+    }
+    .btn-glow:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 0 36px rgba(92,53,168,0.75), 0 10px 30px rgba(0,0,0,0.4); }
+    .btn-glow .arrow { transition: transform var(--trans); }
+    .btn-glow:hover .arrow { transform: translateX(5px); }
+
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; color: var(--teal-lt); padding: 12px 30px;
+      border: 2px solid var(--teal); border-radius: 50px; font-size: 0.95rem;
+      font-weight: 700; cursor: pointer; transition: var(--trans);
+    }
+    .btn-outline:hover { background: var(--teal); color: var(--navy); }
+
+    /* =====================================================
+       VIDEO EMBED
+       ===================================================== */
+    .video-wrap {
+      background: rgba(0,0,0,0.3); border-radius: var(--radius); overflow: hidden;
+      box-shadow: var(--shadow-glow), var(--shadow-card); aspect-ratio: 16/9;
+      max-width: 800px; margin: 0 auto 16px; border: 1px solid var(--card-border);
+    }
+    .video-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+
+    /* =====================================================
+       STROOP TEST
+       ===================================================== */
+    .activity-banner {
+      background: linear-gradient(135deg, rgba(92,53,168,0.3), rgba(31,200,176,0.2));
+      border: 1px solid var(--card-border); border-radius: var(--radius);
+      padding: 20px 28px; margin-bottom: 28px; font-size: 1rem;
+      font-weight: 600; color: var(--white); text-align: center;
+    }
+    .activity-banner .warn { color: var(--teal-lt); font-size: 1.1rem; }
+
+    .stroop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 36px; }
+
+    .stroop-word {
+      background: rgba(255,255,255,0.07); border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm); padding: 24px 10px; text-align: center;
+      font-size: 1.4rem; font-weight: 900; letter-spacing: 2px;
+      transition: transform var(--trans); cursor: default;
+    }
+    .stroop-word:hover { transform: scale(1.05); background: rgba(255,255,255,0.12); }
+
+    /* =====================================================
+       REACTION BALL GAME
+       ===================================================== */
+    .game-arena-wrapper {
+      background: rgba(0,0,0,0.25); border: 2px solid var(--card-border);
+      border-radius: var(--radius); padding: 24px; margin-bottom: 28px;
+    }
+    .game-stats-row { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; margin-bottom: 18px; }
+    .game-stat { text-align: center; }
+    .game-stat .gs-val { font-size: 1.8rem; font-weight: 900; color: var(--teal-lt); }
+    .game-stat .gs-label { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; }
+
+    #gameArena {
+      position: relative; width: 100%; height: 340px;
+      background: rgba(13,27,62,0.7); border-radius: var(--radius-sm);
+      overflow: hidden; border: 1px solid rgba(92,53,168,0.3);
+    }
+    #gameArena .arena-idle {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 12px; color: var(--text-muted);
+    }
+    #gameArena .arena-idle p { font-size: 0.9rem; }
+
+    .ball {
+      position: absolute; border-radius: 50%; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; animation: ballPulse 0.3s ease-out forwards;
+      transition: transform 0.1s; user-select: none;
+    }
+    .ball:hover { transform: scale(1.12); }
+
+    @keyframes ballPulse {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    @keyframes ballPop {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.4); opacity: 0.5; }
+      100% { transform: scale(0); opacity: 0; }
+    }
+    .ball.clicked { animation: ballPop 0.25s ease forwards; pointer-events: none; }
+
+    .game-controls { display: flex; gap: 12px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+
+    #gameProgressBar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-bottom: 14px; overflow: hidden; }
+    #gameProgressFill { height: 100%; background: linear-gradient(to right, var(--purple-lt), var(--teal)); border-radius: 3px; width: 0; transition: width 0.3s; }
+
+    /* =====================================================
+       SCORE FORM
+       ===================================================== */
+    .score-panel {
+      background: rgba(255,255,255,0.06); border: 1px solid var(--card-border);
+      border-radius: var(--radius); padding: 36px; text-align: center;
+      max-width: 520px; margin: 0 auto 32px;
+    }
+    .score-panel h3 { font-size: 1.15rem; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+    .score-panel p  { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 22px; }
+
+    .input-row { display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap; }
+
+    .num-input {
+      width: 82px; height: 54px; background: rgba(255,255,255,0.08);
+      border: 2px solid rgba(255,255,255,0.2); border-radius: 12px; color: var(--white);
+      font-size: 1.4rem; font-weight: 800; text-align: center; outline: none; transition: var(--trans);
+    }
+    .num-input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(31,200,176,0.2); }
+
+    .field-error { color: #ff6b6b; font-size: 0.83rem; margin-top: 8px; display: none; }
+
+    /* =====================================================
+       RESULTS PANEL
+       ===================================================== */
+    .results-panel {
+      background: rgba(255,255,255,0.05); border: 1px solid var(--card-border);
+      border-radius: var(--radius); padding: 36px; display: none;
+      animation: fadeUp 0.4s var(--trans) forwards;
+    }
+    .results-panel.visible { display: block; }
+    .results-panel h3 { font-size: 1.2rem; font-weight: 700; color: var(--white); margin-bottom: 28px; text-align: center; }
+
+    .metric { margin-bottom: 24px; }
+    .metric-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .metric-label { font-size: 0.88rem; font-weight: 600; color: var(--text-muted); }
+    .metric-value { font-size: 1.1rem; font-weight: 900; color: var(--white); }
+
+    .progress-track { height: 12px; background: rgba(255,255,255,0.1); border-radius: 50px; overflow: hidden; }
+    .progress-fill  { height: 100%; border-radius: 50px; width: 0; transition: width 1.3s cubic-bezier(0.4,0,0.2,1); }
+    .fill-purple { background: linear-gradient(to right, var(--purple-lt), var(--violet)); }
+    .fill-red    { background: linear-gradient(to right, #e53935, #ff8a80); }
+    .fill-teal   { background: linear-gradient(to right, var(--teal), var(--teal-lt)); }
+
+    /* =====================================================
+       CHECKBOX GROUPS
+       ===================================================== */
+    .cb-group { background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 26px 28px; margin-bottom: 18px; }
+    .cb-group h4 { font-size: 0.95rem; font-weight: 700; color: var(--teal-lt); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .cb-list { display: flex; flex-wrap: wrap; gap: 10px; }
+
+    .cb-item {
+      display: flex; align-items: center; gap: 8px; cursor: pointer;
+      background: rgba(255,255,255,0.06); border: 2px solid transparent;
+      padding: 8px 16px; border-radius: 50px; font-size: 0.86rem;
+      font-weight: 500; color: var(--text-muted); transition: var(--trans); user-select: none;
+    }
+    .cb-item input { display: none; }
+    .cb-item:hover { border-color: rgba(31,200,176,0.4); color: var(--white); }
+    .cb-item.checked { background: rgba(31,200,176,0.15); border-color: var(--teal); color: var(--teal-lt); }
+    .cb-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid currentColor; transition: var(--trans); flex-shrink: 0; }
+    .cb-item.checked .cb-dot { background: var(--teal); border-color: var(--teal); }
+
+    .stress-summary { background: linear-gradient(135deg, rgba(92,53,168,0.2), rgba(31,200,176,0.15)); border: 1px solid rgba(31,200,176,0.3); border-radius: var(--radius); padding: 24px 28px; margin-top: 24px; }
+    .stress-summary h4 { color: var(--white); font-size: 0.95rem; font-weight: 700; margin-bottom: 14px; }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { background: rgba(31,200,176,0.2); border: 1px solid rgba(31,200,176,0.4); color: var(--teal-lt); padding: 5px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 600; }
+    .empty-note { color: var(--text-muted); font-size: 0.88rem; font-style: italic; }
+
+    /* =====================================================
+       SOLUTION CARDS
+       ===================================================== */
+    .sol-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .sol-card { background: rgba(255,255,255,0.06); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 28px; transition: transform var(--trans), box-shadow var(--trans); }
+    .sol-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-glow), var(--shadow-card); }
+    .sol-card.aviation { border-top: 4px solid var(--teal); }
+    .sol-card.psych    { border-top: 4px solid var(--purple-lt); }
+    .sol-card.stem     { border-top: 4px solid var(--violet); }
+    .sol-header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+    .sol-icon-wrap { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+    .sol-icon-wrap.aviation { background: rgba(31,200,176,0.2); }
+    .sol-icon-wrap.psych    { background: rgba(92,53,168,0.3); }
+    .sol-icon-wrap.stem     { background: rgba(155,89,212,0.25); }
+    .sol-card h4 { font-size: 1rem; font-weight: 700; color: var(--white); }
+    .sol-card ul { list-style: none; }
+    .sol-card ul li { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.07); font-size: 0.86rem; color: var(--text-muted); line-height: 1.5; }
+    .sol-card ul li:last-child { border-bottom: none; }
+    .sol-card ul li .li-icon { color: var(--teal); font-style: normal; flex-shrink: 0; margin-top: 1px; font-weight: 700; }
+
+    /* =====================================================
+       DASHBOARD
+       ===================================================== */
+    .dashboard { background: linear-gradient(135deg, rgba(13,27,62,0.95), rgba(26,16,96,0.95)); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 44px 40px; box-shadow: var(--shadow-glow), var(--shadow-card); text-align: center; }
+    .dashboard h3 { font-size: 1.6rem; font-weight: 800; color: var(--white); margin-bottom: 6px; }
+    .dashboard .dash-sub { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 36px; }
+
+    .circles-row { display: flex; justify-content: center; gap: 36px; flex-wrap: wrap; margin-bottom: 40px; }
+    .circle-wrap { text-align: center; }
+    .score-ring { width: 110px; height: 110px; border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+    .ring-inner { width: 82px; height: 82px; border-radius: 50%; background: #0d1b3e; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .ring-num { font-size: 1.35rem; font-weight: 900; color: var(--white); line-height: 1; }
+    .ring-pct { font-size: 0.68rem; color: var(--text-muted); }
+    .circle-name { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); }
+
+    .dash-bars { margin-bottom: 32px; text-align: left; }
+    .dash-metric { margin-bottom: 18px; }
+    .dash-metric-head { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .dash-metric-head span:first-child { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+    .dash-metric-head span:last-child  { font-size: 0.9rem; color: var(--white); font-weight: 800; }
+
+    .rec-box { background: rgba(31,200,176,0.1); border: 1px solid rgba(31,200,176,0.3); border-radius: var(--radius-sm); padding: 20px 24px; font-size: 0.95rem; line-height: 1.75; color: var(--text-main); margin-bottom: 28px; text-align: left; }
+
+    .factor-badge { display: inline-flex; align-items: center; gap: 10px; background: rgba(92,53,168,0.25); border: 1px solid rgba(155,89,212,0.4); border-radius: 50px; padding: 10px 24px; font-size: 0.9rem; color: var(--text-main); margin-bottom: 28px; }
+    .factor-badge strong { color: var(--violet); font-size: 1.1rem; }
+
+    /* =====================================================
+       MOTIVATION
+       ===================================================== */
+    .motivation { background: linear-gradient(135deg, var(--purple), var(--navy-mid), var(--teal) 200%); border-radius: var(--radius); padding: 52px 40px; text-align: center; margin-top: 24px; position: relative; overflow: hidden; }
+    .motivation::before { content: '"'; position: absolute; top: -20px; left: 20px; font-size: 14rem; opacity: 0.06; font-family: Georgia, serif; line-height: 1; color: var(--white); pointer-events: none; }
+    .motivation blockquote { font-size: clamp(1.15rem, 2.5vw, 1.55rem); font-weight: 700; font-style: italic; color: var(--white); max-width: 680px; margin: 0 auto 20px; line-height: 1.5; }
+    .motivation .quote-attr { font-size: 0.8rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--teal-lt); margin-bottom: 28px; }
+    .motivation .final-msg { font-size: 0.95rem; color: rgba(255,255,255,0.75); max-width: 560px; margin: 0 auto; line-height: 1.7; }
+
+    /* Divider */
+    .glow-divider { height: 1px; background: linear-gradient(to right, transparent, rgba(92,53,168,0.5), rgba(31,200,176,0.5), transparent); margin: 0; }
+
+    /* =====================================================
+       FOOTER
+       ===================================================== */
+    footer { text-align: center; padding: 28px 24px; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--card-border); margin-top: 60px; }
+
+    /* =====================================================
+       RESPONSIVE
+       ===================================================== */
+    @media (max-width: 640px) {
+      nav { padding: 0 12px; }
+      .nav-btn { padding: 6px 10px; font-size: 0.75rem; }
+      .lang-btn { padding: 5px 9px; font-size: 0.72rem; }
+      .page-header { padding: 44px 16px 32px; }
+      .section { padding: 32px 0; }
+      .dashboard { padding: 28px 16px; }
+      .motivation { padding: 36px 20px; }
+      #gameArena { height: 260px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     PROJECT BANNER
+     ============================================================ -->
+<div class="project-banner">⭐ TFG STEM Research Project by Howell ⭐</div>
+
+<!-- ============================================================
+     NAVIGATION
+     ============================================================ -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-logo">🧠</div>
+    Mind Over Matter
+  </div>
+  <div class="nav-right">
+    <div class="nav-links">
+      <button class="nav-btn active" onclick="goTo('intro',this)" data-i18n="nav_intro">Introduction</button>
+      <button class="nav-btn"        onclick="goTo('assess',this)" data-i18n="nav_assess">Assessment</button>
+      <button class="nav-btn"        onclick="goTo('solutions',this)" data-i18n="nav_sol">Solutions</button>
+    </div>
+    <!-- Language Toggle -->
+    <div class="lang-toggle">
+      <button class="lang-btn lang-on"  id="btnEn" onclick="setLang('en')">English</button>
+      <button class="lang-btn lang-off" id="btnHi" onclick="setLang('hi')">हिंदी</button>
+    </div>
+  </div>
+</nav>
+
+
+<!-- ============================================================
+     SCREEN 1 — INTRODUCTION
+     ============================================================ -->
+<section id="screen-intro" class="screen active">
+
+  <div class="page-header">
+    <div class="page-tag" data-i18n="s1_tag">✈ Aviation Psychology × STEM Wellness</div>
+    <h1 class="page-title">Mind Over Matter</h1>
+    <p class="page-subtitle" data-i18n="s1_subtitle">Helping Students Stay Calm, Focused, and Confident Before Exams</p>
+
+    <div class="stat-row">
+      <div class="stat"><div class="stat-num">72%</div><div class="stat-label" data-i18n="s1_stat1">Students Report Exam Anxiety</div></div>
+      <div class="stat"><div class="stat-num">3×</div><div class="stat-label" data-i18n="s1_stat2">Better Results With Calm Focus</div></div>
+      <div class="stat"><div class="stat-num">2</div><div class="stat-label" data-i18n="s1_stat3">Science-Backed Activities</div></div>
+    </div>
+
+    <button class="btn-glow" onclick="goTo('assess', document.querySelectorAll('.nav-btn')[1])">
+      <span data-i18n="s1_cta">Start Assessment</span> <span class="arrow">→</span>
+    </button>
+  </div>
+
+  <div class="glow-divider"></div>
+
+  <div class="container">
+
+    <!-- Stress -->
+    <div class="section">
+      <h2 class="section-title" data-i18n="s1_sec1_title">Why Exam Stress Hurts Your Performance</h2>
+      <p class="section-sub" data-i18n="s1_sec1_sub">When the brain enters fight-or-flight mode, cortisol narrows working memory and blocks problem-solving — exactly what STEM tests demand most.</p>
+      <div class="cards-grid">
+        <div class="glass-card accent-top-purple">
+          <div class="card-icon">📉</div>
+          <h3 data-i18n="s1_c1h">Memory Impairment</h3>
+          <p data-i18n="s1_c1p">High cortisol shrinks your ability to retrieve information, causing blank-outs even when you know the material well.</p>
+        </div>
+        <div class="glass-card accent-top-teal">
+          <div class="card-icon">😰</div>
+          <h3 data-i18n="s1_c2h">STEM Anxiety Is Real</h3>
+          <p data-i18n="s1_c2p">Math anxiety alone can reduce working memory capacity by up to 30%, directly impairing calculation and reasoning.</p>
+        </div>
+        <div class="glass-card accent-top-violet">
+          <div class="card-icon">🎯</div>
+          <h3 data-i18n="s1_c3h">Focus Can Be Trained</h3>
+          <p data-i18n="s1_c3p">Attentional control responds to deliberate practice. Small daily exercises produce measurable improvements in test performance.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="glow-divider"></div>
+
+    <!-- Pilots -->
+    <div class="section">
+      <h2 class="section-title" data-i18n="s1_sec2_title">✈️ What Pilots Teach Us About Pressure</h2>
+      <p class="section-sub" data-i18n="s1_sec2_sub">Commercial pilots make life-critical decisions under extreme stress using structured mental frameworks. These exact strategies translate directly to exam performance.</p>
+      <div class="cards-grid">
+        <div class="glass-card accent-top-teal">
+          <div class="card-icon">🌬️</div>
+          <h3 data-i18n="s1_c4h">Box Breathing</h3>
+          <p data-i18n="s1_c4p">Inhale 4 sec → hold 4 sec → exhale 4 sec → hold 4 sec. Used by Navy pilots to restore calm in seconds.</p>
+        </div>
+        <div class="glass-card accent-top-purple">
+          <div class="card-icon">📋</div>
+          <h3 data-i18n="s1_c5h">Pre-Flight Checklists</h3>
+          <p data-i18n="s1_c5p">Pilots never rely on memory alone. A simple pre-exam checklist reduces cognitive overload and prevents careless errors.</p>
+        </div>
+        <div class="glass-card accent-top-violet">
+          <div class="card-icon">🗺️</div>
+          <h3 data-i18n="s1_c6h">Situational Awareness</h3>
+          <p data-i18n="s1_c6p">Knowing your exam status, time remaining, and what's ahead — and adapting fluidly — is as vital in tests as in a cockpit.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="glow-divider"></div>
+
+    <!-- How it works -->
+    <div class="section">
+      <h2 class="section-title" data-i18n="s1_sec3_title">🔬 How This Website Works</h2>
+      <p class="section-sub" data-i18n="s1_sec3_sub">Your results are calculated from two cognitive activities and used to generate a personalised focus report with targeted recommendations.</p>
+      <div class="cards-grid">
+        <div class="glass-card">
+          <div class="card-icon">🟪</div>
+          <h3 data-i18n="s1_c7h">Activity 1 — Stroop Test</h3>
+          <p data-i18n="s1_c7p">Name the ink color of 10 mismatched color words. Measures selective attention and cognitive control.</p>
+        </div>
+        <div class="glass-card">
+          <div class="card-icon">🎯</div>
+          <h3 data-i18n="s1_c8h">Activity 2 — Reaction Ball</h3>
+          <p data-i18n="s1_c8p">Click 15 colored circles before they vanish. Measures reaction speed, visual attention, and sustained concentration.</p>
+        </div>
+        <div class="glass-card">
+          <div class="card-icon">📊</div>
+          <h3 data-i18n="s1_c9h">Personalised Report</h3>
+          <p data-i18n="s1_c9p">Both scores are combined into a Focus Score, Stress Level, and Relaxation Score with custom recommendations.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="glow-divider"></div>
+
+    <!-- Video -->
+    <div class="section" style="text-align:center;">
+      <h2 class="section-title" style="text-align:center;" data-i18n="s1_sec4_title">🎬 Guided Breathing — Prepare Your Mind</h2>
+      <p class="section-sub" style="text-align:center; max-width:520px; margin-left:auto; margin-right:auto;" data-i18n="s1_sec4_sub">
+        Watch this calming exercise before you begin. It only takes a few minutes and measurably improves your focus score.
+      </p>
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/tybOi4hjZFQ"
+          title="Guided breathing relaxation"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen></iframe>
+      </div>
+      <br>
+      <button class="btn-glow" onclick="goTo('assess', document.querySelectorAll('.nav-btn')[1])">
+        <span data-i18n="s1_cta">Start Assessment</span> <span class="arrow">→</span>
+      </button>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SCREEN 2 — FOCUS ASSESSMENT
+     ============================================================ -->
+<section id="screen-assess" class="screen">
+
+  <div class="page-header">
+    <div class="page-tag" data-i18n="s2_tag">🧪 Two-Part Cognitive Assessment</div>
+    <h1 class="page-title" data-i18n="s2_title">Focus Assessment</h1>
+    <p class="page-subtitle" data-i18n="s2_subtitle">Complete both activities below. Your combined score powers your personalised results.</p>
+  </div>
+
+  <div class="glow-divider"></div>
+
+  <div class="container">
+
+    <!-- Activity 1: Stroop -->
+    <div class="section">
+      <h2 class="section-title" data-i18n="s2_act1_title">Activity 1 — Stroop Focus Test</h2>
+      <p class="section-sub" data-i18n="s2_act1_sub">Read through the words below, but name the COLOR of each word — not the word itself.</p>
+
+      <div class="activity-banner">
+        <span class="warn">📌</span>
+        <span data-i18n="s2_banner">Name the COLOR of the word — not the word itself. Work through all 10 and count how many you identify correctly.</span>
+      </div>
+
+      <div class="stroop-grid" id="stroopGrid"></div>
+
+      <div class="score-panel">
+        <h3 data-i18n="s2_stroop_h3">Stroop Result</h3>
+        <p data-i18n="s2_stroop_p">How many colors did you correctly identify out of 10?</p>
+        <div class="input-row">
+          <input type="number" id="stroopInput" class="num-input"
+            min="0" max="10" placeholder="0"
+            oninput="if(this.value>10)this.value=10; if(this.value<0)this.value=0;"
+            aria-label="Stroop correct answers" />
+          <label for="stroopInput" style="color:var(--text-muted); font-size:0.9rem;">/ 10</label>
+        </div>
+        <p class="field-error" id="stroopErr" data-i18n="s2_stroop_err">Please enter a number between 0 and 10.</p>
+      </div>
+    </div>
+
+    <div class="glow-divider"></div>
+
+    <!-- Activity 2: Reaction Ball -->
+    <div class="section">
+      <h2 class="section-title" data-i18n="s2_act2_title">Activity 2 — Reaction Ball Challenge</h2>
+      <p class="section-sub" data-i18n="s2_act2_sub">Click the colored balls before they disappear! 15 balls will appear in random positions. Be quick — each ball only stays for a limited time.</p>
+
+      <div class="game-arena-wrapper">
+        <div class="game-stats-row">
+          <div class="game-stat"><div class="gs-val" id="gsHit">0</div><div class="gs-label" data-i18n="s2_gs_hit">Balls Hit</div></div>
+          <div class="game-stat"><div class="gs-val" id="gsMiss" style="color:#ff8a80;">0</div><div class="gs-label" data-i18n="s2_gs_miss">Balls Missed</div></div>
+          <div class="game-stat"><div class="gs-val" id="gsAcc">—</div><div class="gs-label" data-i18n="s2_gs_acc">Accuracy %</div></div>
+          <div class="game-stat"><div class="gs-val" id="gsBalls">0 / 15</div><div class="gs-label" data-i18n="s2_gs_prog">Progress</div></div>
+        </div>
+
+        <div id="gameProgressBar"><div id="gameProgressFill"></div></div>
+
+        <div id="gameArena">
+          <div class="arena-idle" id="arenaIdle">
+            <span style="font-size:2.5rem;">🎯</span>
+            <p><strong style="color:var(--teal-lt)" data-i18n="s2_start_btn">▶ Start Game</strong></p>
+            <p data-i18n="s2_arena_p2">Click every ball before it disappears!</p>
+          </div>
+        </div>
+
+        <div class="game-controls">
+          <button class="btn-glow" id="startBtn" onclick="startGame()" data-i18n="s2_start_btn">▶ Start Game</button>
+          <button class="btn-outline" id="resetBtn" onclick="resetGame()" style="display:none;" data-i18n="s2_reset_btn">↺ Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="glow-divider"></div>
+
+    <!-- Calculate -->
+    <div class="section" style="text-align:center;">
+      <h2 class="section-title" style="text-align:center;" data-i18n="s2_calc_title">📊 Calculate Your Focus Score</h2>
+      <p class="section-sub" style="text-align:center; max-width:500px; margin-left:auto; margin-right:auto;" data-i18n="s2_calc_sub">
+        Make sure both activities are complete, then press the button to generate your results.
+      </p>
+
+      <button class="btn-glow" onclick="calcResults()">
+        <span data-i18n="s2_calc_btn">Calculate Results</span> <span class="arrow">→</span>
+      </button>
+      <p class="field-error" id="calcErr" style="display:none; text-align:center; margin-top:12px;" data-i18n="s2_calc_err">
+        Please complete the Stroop input and finish the Reaction Ball game first.
+      </p>
+
+      <div class="results-panel" id="resultsPanel" style="margin-top:32px; text-align:left;">
+        <h3 data-i18n="s2_results_h3">🏆 Your Combined Focus Results</h3>
+
+        <div class="metric">
+          <div class="metric-header">
+            <span class="metric-label" data-i18n="s2_metric_focus">🎯 Focus Score (combined average)</span>
+            <span class="metric-value" id="focusVal">—</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill fill-purple" id="focusBar"></div></div>
+        </div>
+
+        <div class="metric">
+          <div class="metric-header">
+            <span class="metric-label" data-i18n="s2_metric_stress">🔥 Stress Level</span>
+            <span class="metric-value" id="stressVal">—</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill fill-red" id="stressBar"></div></div>
+        </div>
+
+        <div class="metric">
+          <div class="metric-header">
+            <span class="metric-label" data-i18n="s2_metric_relax">😌 Relaxation Score</span>
+            <span class="metric-value" id="relaxVal">—</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill fill-teal" id="relaxBar"></div></div>
+        </div>
+
+        <div class="metric" style="margin-top:28px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1);">
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;" data-i18n="s2_breakdown">Score breakdown:</p>
+          <div class="metric-header">
+            <span class="metric-label" data-i18n="s2_stroop_score">🟪 Stroop Score</span>
+            <span class="metric-value" id="stroopScoreVal">—</span>
+          </div>
+          <div class="metric-header" style="margin-top:8px;">
+            <span class="metric-label" data-i18n="s2_react_score">🎯 Reaction Score</span>
+            <span class="metric-value" id="reactionScoreVal">—</span>
+          </div>
+        </div>
+
+        <div style="text-align:center; margin-top:28px;">
+          <button class="btn-glow" onclick="goTo('solutions', document.querySelectorAll('.nav-btn')[2])">
+            <span data-i18n="s2_view_sol">View My Solutions</span> <span class="arrow">→</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SCREEN 3 — SOLUTIONS & RESULTS
+     ============================================================ -->
+<section id="screen-solutions" class="screen">
+
+  <div class="page-header">
+    <div class="page-tag" data-i18n="s3_tag">💡 Evidence-Based Strategies</div>
+    <h1 class="page-title" data-i18n="s3_title">Solutions &amp; Results</h1>
+    <p class="page-subtitle" data-i18n="s3_subtitle">Personalised stress analysis, proven techniques, and your final focus dashboard.</p>
+  </div>
+
+  <div class="glow-divider"></div>
+
+  <div class="container">
+
+    <!-- Section 1: Stress Analysis -->
+    <div class="section">
+      <h2 class="section-title" data-i18n="s3_sec1_title">Section 1 — Stress Analysis</h2>
+      <p class="section-sub" data-i18n="s3_sec1_sub">Select every item that applies to you. Your choices are summarised below and factored into your personalised recommendations.</p>
+
+      <div class="cb-group">
+        <!-- Personalised question heading -->
+        <h4 id="cb1_heading" data-i18n="s3_cb1_h">⚡ What are your stress triggers?</h4>
+        <div class="cb-list" id="cbTriggers"></div>
+      </div>
+
+      <div class="cb-group">
+        <h4 id="cb2_heading" data-i18n="s3_cb2_h">📵 What distracts you the most?</h4>
+        <div class="cb-list" id="cbDistractions"></div>
+      </div>
+
+      <div class="cb-group">
+        <h4 id="cb3_heading" data-i18n="s3_cb3_h">💪 What physical signs of stress do you experience?</h4>
+        <div class="cb-list" id="cbPhysical"></div>
+      </div>
+
+      <div class="stress-summary">
+        <h4 data-i18n="s3_summary_h">📋 Your Selected Stress Factors</h4>
+        <div class="tag-list" id="summaryTags">
+          <span class="empty-note" data-i18n="s3_empty">No factors selected yet — choose from the lists above.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="glow-divider"></div>
+
+    <!-- Section 2: Solutions -->
+    <div class="section">
+      <h2 class="section-title" data-i18n="s3_sec2_title">Section 2 — Recommended Solutions</h2>
+      <p class="section-sub" data-i18n="s3_sec2_sub">Techniques drawn from aviation, cognitive science, and STEM education research.</p>
+
+      <div class="sol-grid">
+
+        <div class="sol-card aviation">
+          <div class="sol-header">
+            <div class="sol-icon-wrap aviation">✈️</div>
+            <h4 data-i18n="s3_avi_h">Aviation Techniques</h4>
+          </div>
+          <ul>
+            <li><i class="li-icon">✓</i><span data-i18n="s3_avi_1">Box Breathing — 4-4-4-4 breath cycle resets your nervous system in minutes</span></li>
+            <li><i class="li-icon">✓</i><span data-i18n="s3_avi_2">Situational Awareness — Track your exam status and adapt to surprises fluidly</span></li>
+            <li><i class="li-icon">✓</i><span data-i18n="s3_avi_3">Checklists — Build a pre-exam routine to eliminate cognitive overload</span></li>
+            <li><i class="li-icon">✓</i><span data-i18n="s3_avi_4">Task Prioritisation — Triage questions by difficulty; secure easy marks first</span></li>
+          </ul>
+        </div>
+
+        <div class="sol-card psych">
+          <div class="sol-header">
+            <div class="sol-icon-wrap psych">🧠</div>
+            <h4 data-i18n="s3_psy_h">Psychology Techniques</h4>
+          </div>
+          <ul>
+            <li><i class="li-icon">✓</i><span data-i18n="s3_psy_1">Positive Self-Talk — Replace "I can't" with "I haven't yet" to rewire thought patterns</span></li>
+            <li><i class="li-icon">✓</i><span data-i18n="s3_psy_2">Visualisation — Mentally rehearse a calm, successful exam before test day</span></li>
+            <li><i class="li-icon">✓</i><span data-i18n="s3_psy_3">Growth Mindset — Every mistake is data, not failure — embrace the challenge</span></li>
+            <li><i class="li-icon">✓</i><span data-i18n="s3_psy_4">Cognitive Reframing — Interpret anxiety as "readiness energy" to boost performance</span></li>
+          </ul>
+        </div>
+
+        <div class="sol-card stem">
+          <div class="sol-header">
+            <div class="sol-icon-wrap stem">📐</div>
+            <h4 data-i18n="s3_stem_h">STEM Success Techniques</h4>
+          </div>
+          <ul>
+            <li><i class="li-icon">✓</i><span data-i18n="s3_stem_1">Break large problems into smaller, manageable steps</span></li>
+            <li><i class="li-icon">✓</i><span data-i18n="s3_stem_2">Practice under timed conditions to simulate exam pressure</span></li>
+            <li><i class="li-icon">✓</i><span data-i18n="s3_stem_3">Review mistakes as learning opportunities, not failures</span></li>
+            <li><i class="li-icon">✓</i><span data-i18n="s3_stem_4">Use active recall: test yourself rather than re-reading notes</span></li>
+            <li><i class="li-icon">✓</i><span data-i18n="s3_stem_5">Maintain a consistent daily study schedule with breaks built in</span></li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="glow-divider"></div>
+
+    <!-- Section 3: Relaxation Video -->
+    <div class="section" style="text-align:center;">
+      <h2 class="section-title" style="text-align:center;" data-i18n="s3_sec3_title">🎬 Section 3 — Relax &amp; Reset</h2>
+      <p class="section-sub" style="text-align:center; max-width:540px; margin-left:auto; margin-right:auto;" data-i18n="s3_sec3_sub">
+        Take a few minutes to relax and reset your mind before continuing your studies. Even 5 minutes of guided breathing measurably lowers cortisol and restores focus.
+      </p>
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/1ZYbU82GVz4"
+          title="Relaxation and breathing exercise"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <div class="glow-divider"></div>
+
+    <!-- Section 4: Dashboard -->
+    <div class="section">
+      <h2 class="section-title" data-i18n="s3_sec4_title">Section 4 — Personalised Results Dashboard</h2>
+      <p class="section-sub" data-i18n="s3_sec4_sub">Your scores from the Focus Assessment, visualised alongside your stress factor summary.</p>
+
+      <div class="dashboard" id="dashboard">
+        <h3 data-i18n="s3_dash_h">📊 Your Performance Summary</h3>
+        <p class="dash-sub" id="dashSub" data-i18n="s3_dash_default">Complete the Focus Assessment to unlock your personalised dashboard.</p>
+
+        <div class="circles-row">
+          <div class="circle-wrap">
+            <div class="score-ring" id="ring-focus" style="background: conic-gradient(var(--purple-lt) 0deg, rgba(255,255,255,0.1) 0deg);">
+              <div class="ring-inner"><span class="ring-num" id="d-focus">—</span><span class="ring-pct">%</span></div>
+            </div>
+            <div class="circle-name" data-i18n="s3_circ_focus">Focus Score</div>
+          </div>
+          <div class="circle-wrap">
+            <div class="score-ring" id="ring-stress" style="background: conic-gradient(#ef5350 0deg, rgba(255,255,255,0.1) 0deg);">
+              <div class="ring-inner"><span class="ring-num" id="d-stress">—</span><span class="ring-pct">%</span></div>
+            </div>
+            <div class="circle-name" data-i18n="s3_circ_stress">Stress Level</div>
+          </div>
+          <div class="circle-wrap">
+            <div class="score-ring" id="ring-relax" style="background: conic-gradient(var(--teal) 0deg, rgba(255,255,255,0.1) 0deg);">
+              <div class="ring-inner"><span class="ring-num" id="d-relax">—</span><span class="ring-pct">%</span></div>
+            </div>
+            <div class="circle-name" data-i18n="s3_circ_relax">Relaxation Score</div>
+          </div>
+          <div class="circle-wrap">
+            <div class="score-ring" id="ring-factors" style="background: conic-gradient(var(--violet) 0deg, rgba(255,255,255,0.1) 0deg);">
+              <div class="ring-inner"><span class="ring-num" id="d-factors">0</span><span class="ring-pct" data-i18n="s3_ring_factors_pct">factors</span></div>
+            </div>
+            <div class="circle-name" data-i18n="s3_circ_factors">Stress Factors</div>
+          </div>
+        </div>
+
+        <div class="dash-bars">
+          <div class="dash-metric">
+            <div class="dash-metric-head">
+              <span data-i18n="s3_bar_focus">🟪 Focus Score</span>
+              <span id="db-focus">—</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill fill-purple" id="db-focusBar"></div></div>
+          </div>
+          <div class="dash-metric">
+            <div class="dash-metric-head">
+              <span data-i18n="s3_bar_stress">🔴 Stress Level</span>
+              <span id="db-stress">—</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill fill-red" id="db-stressBar"></div></div>
+          </div>
+          <div class="dash-metric">
+            <div class="dash-metric-head">
+              <span data-i18n="s3_bar_relax">🟢 Relaxation Score</span>
+              <span id="db-relax">—</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill fill-teal" id="db-relaxBar"></div></div>
+          </div>
+        </div>
+
+        <div class="rec-box" id="recBox">
+          <em style="color:var(--text-muted);" data-i18n="s3_rec_default">Your personalised recommendation will appear here after you complete the assessment.</em>
+        </div>
+
+        <div class="factor-badge">
+          <span data-i18n="s3_factor_pre">You have identified</span>
+          &nbsp;<strong id="factorCount">0</strong>&nbsp;
+          <span data-i18n="s3_factor_post">stress factor(s) — review the solutions above for targeted help.</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Motivation -->
+    <div class="motivation">
+      <blockquote data-i18n="s3_quote">"Pressure is a privilege when preparation meets opportunity."</blockquote>
+      <p class="quote-attr" data-i18n="s3_quote_attr">— Mind Over Matter</p>
+      <p class="final-msg">
+        <span data-i18n="s3_final_msg">Remember: stress is not a sign of weakness — it is energy waiting to be directed. With the right preparation, focused breathing, and a growth mindset, you have everything you need to walk into your next exam calm, confident, and ready to perform at your best.</span>
+        <strong style="color:var(--teal-lt)"> <span data-i18n="s3_final_emph">You've got this.</span></strong>
+      </p>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer>
+  <p data-i18n="footer_text">Mind Over Matter &nbsp;|&nbsp; TFG STEM Research Project by Howell &nbsp;|&nbsp; Aviation Psychology × Cognitive Science × STEM Wellness</p>
+</footer>
+
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+  /* =========================================================
+     TRANSLATIONS
+     ========================================================= */
+  const T = {
+    // NAV
+    nav_intro:  { en: 'Introduction', hi: 'परिचय' },
+    nav_assess: { en: 'Assessment',   hi: 'मूल्यांकन' },
+    nav_sol:    { en: 'Solutions',    hi: 'समाधान' },
+
+    // SCREEN 1
+    s1_tag:      { en: '✈ Aviation Psychology × STEM Wellness', hi: '✈ विमानन मनोविज्ञान × STEM वेलनेस' },
+    s1_subtitle: { en: 'Helping Students Stay Calm, Focused, and Confident Before Exams', hi: 'परीक्षाओं से पहले छात्रों को शांत, केंद्रित और आत्मविश्वासी रहने में मदद करना' },
+    s1_stat1:    { en: 'Students Report Exam Anxiety',     hi: 'छात्रों को परीक्षा की चिंता होती है' },
+    s1_stat2:    { en: 'Better Results With Calm Focus',   hi: 'शांत फोकस से बेहतर परिणाम' },
+    s1_stat3:    { en: 'Science-Backed Activities',        hi: 'विज्ञान-समर्थित गतिविधियाँ' },
+    s1_cta:      { en: 'Start Assessment',                 hi: 'मूल्यांकन शुरू करें' },
+
+    s1_sec1_title: { en: 'Why Exam Stress Hurts Your Performance', hi: 'परीक्षा का तनाव आपके प्रदर्शन को क्यों नुकसान पहुँचाता है' },
+    s1_sec1_sub:   { en: 'When the brain enters fight-or-flight mode, cortisol narrows working memory and blocks problem-solving — exactly what STEM tests demand most.', hi: 'जब मस्तिष्क तनाव की स्थिति में जाता है, कोर्टिसोल कार्यशील स्मृति को कम करता है और समस्या-समाधान को बाधित करता है — ठीक वही जो STEM परीक्षाएँ सबसे अधिक माँगती हैं।' },
+    s1_c1h: { en: 'Memory Impairment',    hi: 'स्मृति हानि' },
+    s1_c1p: { en: 'High cortisol shrinks your ability to retrieve information, causing blank-outs even when you know the material well.', hi: 'उच्च कोर्टिसोल जानकारी प्राप्त करने की क्षमता कम करता है, जिससे सब कुछ जानते हुए भी दिमाग खाली हो जाता है।' },
+    s1_c2h: { en: 'STEM Anxiety Is Real', hi: 'STEM की चिंता वास्तविक है' },
+    s1_c2p: { en: 'Math anxiety alone can reduce working memory capacity by up to 30%, directly impairing calculation and reasoning.', hi: 'गणित की चिंता अकेले ही कार्यशील स्मृति क्षमता को 30% तक कम कर सकती है।' },
+    s1_c3h: { en: 'Focus Can Be Trained', hi: 'फोकस को प्रशिक्षित किया जा सकता है' },
+    s1_c3p: { en: 'Attentional control responds to deliberate practice. Small daily exercises produce measurable improvements in test performance.', hi: 'ध्यान नियंत्रण जानबूझकर अभ्यास से सुधरता है। छोटे दैनिक व्यायाम परीक्षा प्रदर्शन में सुधार लाते हैं।' },
+
+    s1_sec2_title: { en: '✈️ What Pilots Teach Us About Pressure', hi: '✈️ पायलट हमें दबाव के बारे में क्या सिखाते हैं' },
+    s1_sec2_sub:   { en: 'Commercial pilots make life-critical decisions under extreme stress using structured mental frameworks. These exact strategies translate directly to exam performance.', hi: 'व्यावसायिक पायलट अत्यधिक तनाव में संरचित मानसिक ढाँचों का उपयोग करके महत्वपूर्ण निर्णय लेते हैं। ये रणनीतियाँ सीधे परीक्षा प्रदर्शन में लागू होती हैं।' },
+    s1_c4h: { en: 'Box Breathing',         hi: 'बॉक्स ब्रीदिंग' },
+    s1_c4p: { en: 'Inhale 4 sec → hold 4 sec → exhale 4 sec → hold 4 sec. Used by Navy pilots to restore calm in seconds.', hi: '4 सेकंड श्वास → 4 सेकंड रोकें → 4 सेकंड साँस छोड़ें → 4 सेकंड रोकें। नौसेना पायलटों द्वारा सेकंडों में शांत होने के लिए उपयोग।' },
+    s1_c5h: { en: 'Pre-Flight Checklists', hi: 'उड़ान-पूर्व चेकलिस्ट' },
+    s1_c5p: { en: 'Pilots never rely on memory alone. A simple pre-exam checklist reduces cognitive overload and prevents careless errors.', hi: 'पायलट कभी भी केवल स्मृति पर निर्भर नहीं रहते। परीक्षा-पूर्व चेकलिस्ट संज्ञानात्मक बोझ कम करती है।' },
+    s1_c6h: { en: 'Situational Awareness', hi: 'स्थितिजन्य जागरूकता' },
+    s1_c6p: { en: "Knowing your exam status, time remaining, and what's ahead — and adapting fluidly — is as vital in tests as in a cockpit.", hi: 'परीक्षा की स्थिति, शेष समय और आगे क्या है — और सहजता से अनुकूलन करना — परीक्षाओं में उतना ही महत्वपूर्ण है।' },
+
+    s1_sec3_title: { en: '🔬 How This Website Works', hi: '🔬 यह वेबसाइट कैसे काम करती है' },
+    s1_sec3_sub:   { en: 'Your results are calculated from two cognitive activities and used to generate a personalised focus report with targeted recommendations.', hi: 'आपके परिणाम दो संज्ञानात्मक गतिविधियों से गणना किए जाते हैं और व्यक्तिगत फोकस रिपोर्ट बनाने के लिए उपयोग किए जाते हैं।' },
+    s1_c7h: { en: 'Activity 1 — Stroop Test',    hi: 'गतिविधि 1 — स्ट्रूप टेस्ट' },
+    s1_c7p: { en: 'Name the ink color of 10 mismatched color words. Measures selective attention and cognitive control.', hi: '10 असंगत रंग शब्दों के स्याही रंग का नाम बताएँ। चुनिंदा ध्यान और संज्ञानात्मक नियंत्रण मापता है।' },
+    s1_c8h: { en: 'Activity 2 — Reaction Ball', hi: 'गतिविधि 2 — रिएक्शन बॉल' },
+    s1_c8p: { en: 'Click 15 colored circles before they vanish. Measures reaction speed, visual attention, and sustained concentration.', hi: '15 रंगीन वृत्तों को गायब होने से पहले क्लिक करें। प्रतिक्रिया गति और निरंतर एकाग्रता मापता है।' },
+    s1_c9h: { en: 'Personalised Report',         hi: 'व्यक्तिगत रिपोर्ट' },
+    s1_c9p: { en: 'Both scores are combined into a Focus Score, Stress Level, and Relaxation Score with custom recommendations.', hi: 'दोनों स्कोर को फोकस स्कोर, तनाव स्तर और विश्राम स्कोर में मिलाया जाता है।' },
+
+    s1_sec4_title: { en: '🎬 Guided Breathing — Prepare Your Mind', hi: '🎬 मार्गदर्शित श्वास — अपने मन को तैयार करें' },
+    s1_sec4_sub:   { en: 'Watch this calming exercise before you begin. It only takes a few minutes and measurably improves your focus score.', hi: 'शुरू करने से पहले यह शांत करने वाला व्यायाम देखें। इसमें केवल कुछ मिनट लगते हैं।' },
+
+    // SCREEN 2
+    s2_tag:      { en: '🧪 Two-Part Cognitive Assessment', hi: '🧪 दो-भाग संज्ञानात्मक मूल्यांकन' },
+    s2_title:    { en: 'Focus Assessment', hi: 'फोकस मूल्यांकन' },
+    s2_subtitle: { en: 'Complete both activities below. Your combined score powers your personalised results.', hi: 'नीचे दोनों गतिविधियाँ पूरी करें। आपका संयुक्त स्कोर आपके व्यक्तिगत परिणाम बनाता है।' },
+
+    s2_act1_title: { en: 'Activity 1 — Stroop Focus Test',      hi: 'गतिविधि 1 — स्ट्रूप फोकस टेस्ट' },
+    s2_act1_sub:   { en: 'Read through the words below, but name the COLOR of each word — not the word itself.', hi: 'नीचे दिए गए शब्दों को पढ़ें, लेकिन प्रत्येक शब्द का रंग बताएँ — शब्द नहीं।' },
+    s2_banner:     { en: 'Name the COLOR of the word — not the word itself. Work through all 10 and count how many you identify correctly.', hi: 'शब्द का रंग बताएँ — शब्द नहीं। सभी 10 शब्दों पर काम करें और गिनें कि आप कितने सही पहचानते हैं।' },
+    s2_stroop_h3:  { en: 'Stroop Result', hi: 'स्ट्रूप परिणाम' },
+    s2_stroop_p:   { en: 'How many colors did you correctly identify out of 10?', hi: '10 में से आपने कितने रंगों को सही पहचाना?' },
+    s2_stroop_err: { en: 'Please enter a number between 0 and 10.', hi: 'कृपया 0 और 10 के बीच एक संख्या दर्ज करें।' },
+
+    s2_act2_title: { en: 'Activity 2 — Reaction Ball Challenge', hi: 'गतिविधि 2 — रिएक्शन बॉल चैलेंज' },
+    s2_act2_sub:   { en: 'Click the colored balls before they disappear! 15 balls will appear in random positions. Be quick — each ball only stays for a limited time.', hi: 'रंगीन गेंदों को गायब होने से पहले क्लिक करें! 15 गेंदें यादृच्छिक स्थानों पर दिखाई देंगी। जल्दी करें!' },
+    s2_gs_hit:     { en: 'Balls Hit',   hi: 'गेंदें मारी' },
+    s2_gs_miss:    { en: 'Balls Missed',hi: 'गेंदें चूकी' },
+    s2_gs_acc:     { en: 'Accuracy %', hi: 'सटीकता %' },
+    s2_gs_prog:    { en: 'Progress',    hi: 'प्रगति' },
+    s2_arena_p2:   { en: 'Click every ball before it disappears!', hi: 'हर गेंद को गायब होने से पहले क्लिक करें!' },
+    s2_start_btn:  { en: '▶ Start Game', hi: '▶ खेल शुरू करें' },
+    s2_reset_btn:  { en: '↺ Reset',      hi: '↺ रीसेट' },
+
+    s2_calc_title: { en: '📊 Calculate Your Focus Score', hi: '📊 अपना फोकस स्कोर गणना करें' },
+    s2_calc_sub:   { en: 'Make sure both activities are complete, then press the button to generate your results.', hi: 'सुनिश्चित करें कि दोनों गतिविधियाँ पूरी हैं, फिर परिणाम बनाने के लिए बटन दबाएँ।' },
+    s2_calc_btn:   { en: 'Calculate Results', hi: 'परिणाम गणना करें' },
+    s2_calc_err:   { en: 'Please complete the Stroop input and finish the Reaction Ball game first.', hi: 'कृपया पहले स्ट्रूप इनपुट भरें और रिएक्शन बॉल गेम पूरा करें।' },
+
+    s2_results_h3:    { en: '🏆 Your Combined Focus Results',   hi: '🏆 आपके संयुक्त फोकस परिणाम' },
+    s2_metric_focus:  { en: '🎯 Focus Score (combined average)', hi: '🎯 फोकस स्कोर (संयुक्त औसत)' },
+    s2_metric_stress: { en: '🔥 Stress Level',                  hi: '🔥 तनाव स्तर' },
+    s2_metric_relax:  { en: '😌 Relaxation Score',              hi: '😌 विश्राम स्कोर' },
+    s2_breakdown:     { en: 'Score breakdown:',                 hi: 'स्कोर विवरण:' },
+    s2_stroop_score:  { en: '🟪 Stroop Score',                  hi: '🟪 स्ट्रूप स्कोर' },
+    s2_react_score:   { en: '🎯 Reaction Score',                hi: '🎯 प्रतिक्रिया स्कोर' },
+    s2_view_sol:      { en: 'View My Solutions',                hi: 'मेरे समाधान देखें' },
+
+    // SCREEN 3
+    s3_tag:      { en: '💡 Evidence-Based Strategies', hi: '💡 साक्ष्य-आधारित रणनीतियाँ' },
+    s3_title:    { en: 'Solutions & Results',           hi: 'समाधान और परिणाम' },
+    s3_subtitle: { en: 'Personalised stress analysis, proven techniques, and your final focus dashboard.', hi: 'व्यक्तिगत तनाव विश्लेषण, सिद्ध तकनीकें, और आपका अंतिम फोकस डैशबोर्ड।' },
+
+    s3_sec1_title: { en: 'Section 1 — Stress Analysis', hi: 'खंड 1 — तनाव विश्लेषण' },
+    s3_sec1_sub:   { en: 'Select every item that applies to you. Your choices are summarised below and factored into your personalised recommendations.', hi: 'वह सब चुनें जो आप पर लागू होता है। आपकी पसंद नीचे सारांशित है और व्यक्तिगत सिफारिशों में शामिल है।' },
+    s3_cb1_h:     { en: '⚡ What are your stress triggers?',                      hi: '⚡ आपके तनाव के कारण क्या हैं?' },
+    s3_cb2_h:     { en: '📵 What distracts you the most?',                        hi: '📵 आपको सबसे ज़्यादा क्या ध्यान भटकाता है?' },
+    s3_cb3_h:     { en: '💪 What physical signs of stress do you experience?',     hi: '💪 आप तनाव के कौन से शारीरिक लक्षण महसूस करते हैं?' },
+    s3_summary_h: { en: '📋 Your Selected Stress Factors',                         hi: '📋 आपके चुने हुए तनाव कारक' },
+    s3_empty:     { en: 'No factors selected yet — choose from the lists above.', hi: 'अभी तक कोई कारक नहीं चुना — ऊपर की सूचियों में से चुनें।' },
+
+    s3_sec2_title: { en: 'Section 2 — Recommended Solutions', hi: 'खंड 2 — अनुशंसित समाधान' },
+    s3_sec2_sub:   { en: 'Techniques drawn from aviation, cognitive science, and STEM education research.', hi: 'विमानन, संज्ञानात्मक विज्ञान और STEM शिक्षा अनुसंधान से ली गई तकनीकें।' },
+
+    s3_avi_h: { en: 'Aviation Techniques',     hi: 'विमानन तकनीकें' },
+    s3_avi_1: { en: 'Box Breathing — 4-4-4-4 breath cycle resets your nervous system in minutes', hi: 'बॉक्स ब्रीदिंग — 4-4-4-4 श्वास चक्र मिनटों में तंत्रिका तंत्र को रीसेट करता है' },
+    s3_avi_2: { en: 'Situational Awareness — Track your exam status and adapt to surprises fluidly', hi: 'स्थितिजन्य जागरूकता — परीक्षा की स्थिति ट्रैक करें और अप्रत्याशित परिस्थितियों के अनुसार अनुकूलित हों' },
+    s3_avi_3: { en: 'Checklists — Build a pre-exam routine to eliminate cognitive overload', hi: 'चेकलिस्ट — संज्ञानात्मक बोझ समाप्त करने के लिए परीक्षा-पूर्व दिनचर्या बनाएँ' },
+    s3_avi_4: { en: 'Task Prioritisation — Triage questions by difficulty; secure easy marks first', hi: 'कार्य प्राथमिकता — कठिनाई के अनुसार प्रश्नों को क्रमबद्ध करें; पहले आसान अंक सुनिश्चित करें' },
+
+    s3_psy_h: { en: 'Psychology Techniques', hi: 'मनोविज्ञान तकनीकें' },
+    s3_psy_1: { en: 'Positive Self-Talk — Replace "I can\'t" with "I haven\'t yet" to rewire thought patterns', hi: 'सकारात्मक आत्म-वार्ता — "मैं नहीं कर सकता" को "मैंने अभी तक नहीं किया" से बदलें' },
+    s3_psy_2: { en: 'Visualisation — Mentally rehearse a calm, successful exam before test day', hi: 'विज़ुअलाइज़ेशन — परीक्षा से पहले मानसिक रूप से सफल परीक्षा का अभ्यास करें' },
+    s3_psy_3: { en: 'Growth Mindset — Every mistake is data, not failure — embrace the challenge', hi: 'विकास मानसिकता — हर गलती डेटा है, विफलता नहीं — चुनौती को स्वीकारें' },
+    s3_psy_4: { en: 'Cognitive Reframing — Interpret anxiety as "readiness energy" to boost performance', hi: 'संज्ञानात्मक पुनर्रूपण — चिंता को "तैयारी ऊर्जा" के रूप में व्याख्या करें' },
+
+    s3_stem_h: { en: 'STEM Success Techniques', hi: 'STEM सफलता तकनीकें' },
+    s3_stem_1: { en: 'Break large problems into smaller, manageable steps',                hi: 'बड़ी समस्याओं को छोटे, प्रबंधनीय चरणों में विभाजित करें' },
+    s3_stem_2: { en: 'Practice under timed conditions to simulate exam pressure',          hi: 'परीक्षा दबाव का अनुकरण करने के लिए समयबद्ध परिस्थितियों में अभ्यास करें' },
+    s3_stem_3: { en: 'Review mistakes as learning opportunities, not failures',            hi: 'गलतियों को सीखने के अवसर के रूप में देखें, विफलता नहीं' },
+    s3_stem_4: { en: 'Use active recall: test yourself rather than re-reading notes',      hi: 'सक्रिय स्मरण का उपयोग करें: नोट्स फिर से पढ़ने के बजाय खुद से परीक्षा लें' },
+    s3_stem_5: { en: 'Maintain a consistent daily study schedule with breaks built in',    hi: 'ब्रेक के साथ एक सुसंगत दैनिक अध्ययन कार्यक्रम बनाए रखें' },
+
+    s3_sec3_title: { en: '🎬 Section 3 — Relax & Reset', hi: '🎬 खंड 3 — आराम करें और रीसेट करें' },
+    s3_sec3_sub:   { en: 'Take a few minutes to relax and reset your mind before continuing your studies. Even 5 minutes of guided breathing measurably lowers cortisol and restores focus.', hi: 'अपने अध्ययन जारी रखने से पहले कुछ मिनट आराम करें। मार्गदर्शित श्वास के केवल 5 मिनट भी कोर्टिसोल को कम करते हैं और फोकस बहाल करते हैं।' },
+
+    s3_sec4_title: { en: 'Section 4 — Personalised Results Dashboard', hi: 'खंड 4 — व्यक्तिगत परिणाम डैशबोर्ड' },
+    s3_sec4_sub:   { en: 'Your scores from the Focus Assessment, visualised alongside your stress factor summary.', hi: 'फोकस मूल्यांकन से आपके स्कोर, तनाव कारक सारांश के साथ दृश्यमान।' },
+
+    s3_dash_h:       { en: '📊 Your Performance Summary', hi: '📊 आपका प्रदर्शन सारांश' },
+    s3_dash_default: { en: 'Complete the Focus Assessment to unlock your personalised dashboard.', hi: 'अपना व्यक्तिगत डैशबोर्ड अनलॉक करने के लिए फोकस मूल्यांकन पूरा करें।' },
+    s3_circ_focus:   { en: 'Focus Score',      hi: 'फोकस स्कोर' },
+    s3_circ_stress:  { en: 'Stress Level',     hi: 'तनाव स्तर' },
+    s3_circ_relax:   { en: 'Relaxation Score', hi: 'विश्राम स्कोर' },
+    s3_circ_factors: { en: 'Stress Factors',   hi: 'तनाव कारक' },
+    s3_ring_factors_pct: { en: 'factors', hi: 'कारक' },
+    s3_bar_focus:    { en: '🟪 Focus Score',      hi: '🟪 फोकस स्कोर' },
+    s3_bar_stress:   { en: '🔴 Stress Level',     hi: '🔴 तनाव स्तर' },
+    s3_bar_relax:    { en: '🟢 Relaxation Score', hi: '🟢 विश्राम स्कोर' },
+    s3_rec_default:  { en: 'Your personalised recommendation will appear here after you complete the assessment.', hi: 'मूल्यांकन पूरा करने के बाद आपकी व्यक्तिगत सिफारिश यहाँ दिखाई देगी।' },
+    s3_factor_pre:   { en: 'You have identified', hi: 'आपने पहचाना है' },
+    s3_factor_post:  { en: 'stress factor(s) — review the solutions above for targeted help.', hi: 'तनाव कारक — लक्षित सहायता के लिए ऊपर दिए गए समाधान देखें।' },
+
+    s3_quote:       { en: '"Pressure is a privilege when preparation meets opportunity."', hi: '"दबाव एक विशेषाधिकार है जब तैयारी अवसर से मिलती है।"' },
+    s3_quote_attr:  { en: '— Mind Over Matter', hi: '— माइंड ओवर मैटर' },
+    s3_final_msg:   { en: 'Remember: stress is not a sign of weakness — it is energy waiting to be directed. With the right preparation, focused breathing, and a growth mindset, you have everything you need to walk into your next exam calm, confident, and ready to perform at your best.', hi: 'याद रखें: तनाव कमज़ोरी का संकेत नहीं है — यह वह ऊर्जा है जो दिशा की प्रतीक्षा कर रही है। सही तैयारी, केंद्रित श्वास और विकास मानसिकता के साथ, आप अगली परीक्षा में शांत, आत्मविश्वासी और सर्वश्रेष्ठ प्रदर्शन के लिए तैयार हैं।' },
+    s3_final_emph:  { en: "You've got this.", hi: 'आप यह कर सकते हैं।' },
+
+    footer_text: { en: 'Mind Over Matter  |  TFG STEM Research Project by Howell  |  Aviation Psychology × Cognitive Science × STEM Wellness', hi: 'माइंड ओवर मैटर  |  TFG STEM रिसर्च प्रोजेक्ट by Howell  |  विमानन मनोविज्ञान × संज्ञानात्मक विज्ञान × STEM वेलनेस' },
+
+    // CHECKBOX ITEM TRANSLATIONS (keys map to CB_DATA value arrays)
+    cb_triggers:     {
+      en: ['Fear of failure','Lack of preparation','Time pressure','Difficult subjects','High expectations'],
+      hi: ['विफलता का डर','तैयारी की कमी','समय का दबाव','कठिन विषय','उच्च अपेक्षाएँ']
+    },
+    cb_distractions: {
+      en: ['Phone notifications','Social media','Noise','Procrastination','Lack of sleep'],
+      hi: ['फोन सूचनाएँ','सोशल मीडिया','शोर','टालमटोल','नींद की कमी']
+    },
+    cb_physical:     {
+      en: ['Sweaty hands','Fast heartbeat','Headaches','Difficulty concentrating','Muscle tension'],
+      hi: ['पसीने वाले हाथ','तेज़ दिल की धड़कन','सिरदर्द','ध्यान केंद्रित करने में कठिनाई','मांसपेशियों में तनाव']
+    },
+
+    // Dynamic game-end text
+    game_complete: { en: 'Game Complete!', hi: 'खेल पूरा!' },
+    game_you_hit:  { en: 'You hit',        hi: 'आपने मारी' },
+    game_out_of:   { en: 'out of',         hi: 'में से' },
+    game_balls:    { en: 'balls',           hi: 'गेंदें' },
+    game_reaction: { en: 'Reaction Score:', hi: 'प्रतिक्रिया स्कोर:' },
+
+    // Dynamic recommendations
+    rec_high: {
+      en: '🌟 <strong>Excellent focus!</strong> You are well prepared and ready to perform under pressure. Maintain your current study habits, use box breathing immediately before your exam, and trust your preparation.',
+      hi: '🌟 <strong>उत्कृष्ट फोकस!</strong> आप अच्छी तरह तैयार हैं और दबाव में प्रदर्शन करने के लिए तैयार हैं। अपनी मौजूदा अध्ययन आदतें बनाए रखें, परीक्षा से पहले बॉक्स ब्रीदिंग का उपयोग करें।'
+    },
+    rec_mid: {
+      en: '👍 <strong>Good focus.</strong> Practicing a few relaxation techniques can help you perform even better. Try the box breathing exercise, review your pre-exam checklist, and limit screen time the evening before.',
+      hi: '👍 <strong>अच्छा फोकस।</strong> कुछ विश्राम तकनीकों का अभ्यास करने से आप और बेहतर प्रदर्शन कर सकते हैं। बॉक्स ब्रीदिंग आज़माएँ और परीक्षा की शाम स्क्रीन समय सीमित करें।'
+    },
+    rec_low: {
+      en: '⚠️ <strong>Your focus may be affected by stress.</strong> Try the recommended techniques and take regular study breaks. Focus on active recall, daily box breathing, and visualisation to rebuild confidence.',
+      hi: '⚠️ <strong>आपका फोकस तनाव से प्रभावित हो सकता है।</strong> अनुशंसित तकनीकों को आज़माएँ और नियमित अध्ययन ब्रेक लें। आत्मविश्वास पुनर्निर्माण के लिए सक्रिय स्मरण और बॉक्स ब्रीदिंग पर ध्यान दें।'
+    },
+
+    // dash sub dynamic
+    dash_sub_score: {
+      en: 'Based on your combined Stroop + Reaction Ball score of',
+      hi: 'आपके संयुक्त स्ट्रूप + रिएक्शन बॉल स्कोर के आधार पर'
+    }
+  };
+
+  /* =========================================================
+     LANGUAGE STATE
+     ========================================================= */
+  let currentLang = 'en';
+
+  function setLang(lang) {
+    currentLang = lang;
+
+    // Update toggle button styles
+    document.getElementById('btnEn').className = 'lang-btn ' + (lang === 'en' ? 'lang-on' : 'lang-off');
+    document.getElementById('btnHi').className = 'lang-btn ' + (lang === 'hi' ? 'lang-on' : 'lang-off');
+
+    // Apply translations to all static [data-i18n] elements
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (T[key] && T[key][lang] !== undefined) {
+        // Use innerHTML so bold tags in recommendations work
+        el.innerHTML = T[key][lang];
+      }
+    });
+
+    // Rebuild checkboxes in the new language (preserves checked state)
+    rebuildCheckboxes();
+
+    // Re-render summary tags in new language
+    updateSummary();
+
+    // Re-render dashboard recommendation if results exist
+    if (state.focusScore !== null) {
+      updateRecBox();
+      updateDashSub();
+    }
+  }
+
+  function t(key) {
+    return (T[key] && T[key][currentLang]) || (T[key] && T[key]['en']) || key;
+  }
+
+  /* =========================================================
+     STATE
+     ========================================================= */
+  const state = {
+    stroopScore:   null,
+    reactionScore: null,
+    focusScore:    null,
+    stressLevel:   null,
+    relaxScore:    null,
+    gameActive:    false,
+    ballsLaunched: 0,
+    ballsHit:      0,
+    ballsMissed:   0,
+    totalBalls:    15,
+    gameComplete:  false
+  };
+
+  /* =========================================================
+     NAVIGATION
+     ========================================================= */
+  function goTo(id, btn) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+    if (btn) btn.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (id === 'solutions') refreshDashboard();
+  }
+
+  /* =========================================================
+     STROOP TEST
+     ========================================================= */
+  // Color words stay in English — it's an English-language cognitive test
+  const STROOP_DATA = [
+    { word:'RED',    color:'#3b82f6' },
+    { word:'GREEN',  color:'#ef4444' },
+    { word:'BLUE',   color:'#eab308' },
+    { word:'YELLOW', color:'#22c55e' },
+    { word:'PURPLE', color:'#f97316' },
+    { word:'ORANGE', color:'#a855f7' },
+    { word:'BLACK',  color:'#06b6d4' },
+    { word:'PINK',   color:'#22c55e' },
+    { word:'BROWN',  color:'#ef4444' },
+    { word:'WHITE',  color:'#eab308' }
+  ];
+
+  function renderStroop() {
+    const grid = document.getElementById('stroopGrid');
+    grid.innerHTML = '';
+    STROOP_DATA.forEach(item => {
+      const d = document.createElement('div');
+      d.className = 'stroop-word';
+      d.style.color = item.color;
+      d.textContent = item.word;
+      grid.appendChild(d);
+    });
+  }
+
+  /* =========================================================
+     REACTION BALL GAME
+     ========================================================= */
+  const BALL_COLORS = ['#7c3aed','#2563eb','#059669','#d97706','#dc2626','#0891b2','#be185d','#7c3aed','#16a34a','#ea580c'];
+  const BALL_EMOJIS = ['⚡','🎯','💫','🌟','🔥','✨','💥','🎪','🚀','🌀'];
+  let ballTimers = [];
+
+  function startGame() {
+    if (state.gameActive || state.gameComplete) return;
+    state.gameActive    = true;
+    state.ballsLaunched = 0;
+    state.ballsHit      = 0;
+    state.ballsMissed   = 0;
+    document.getElementById('arenaIdle').style.display = 'none';
+    document.getElementById('startBtn').style.display  = 'none';
+    document.getElementById('resetBtn').style.display  = 'inline-flex';
+    updateGameUI();
+    scheduleBalls();
+  }
+
+  function scheduleBalls() {
+    for (let i = 0; i < state.totalBalls; i++) {
+      const timer = setTimeout(() => {
+        if (!state.gameActive) return;
+        launchBall();
+      }, i * 750);
+      ballTimers.push(timer);
+    }
+  }
+
+  function launchBall() {
+    state.ballsLaunched++;
+    updateProgress();
+    const arena = document.getElementById('gameArena');
+    const aW = arena.clientWidth, aH = arena.clientHeight;
+    const size = 56 + Math.random() * 18;
+    const ball = document.createElement('div');
+    ball.className = 'ball';
+    const color = BALL_COLORS[Math.floor(Math.random() * BALL_COLORS.length)];
+    const emoji = BALL_EMOJIS[Math.floor(Math.random() * BALL_EMOJIS.length)];
+    ball.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*(aW-size-10)+5}px;top:${Math.random()*(aH-size-10)+5}px;background:${color};box-shadow:0 0 18px ${color}88;font-size:${size*0.4}px;`;
+    ball.textContent = emoji;
+    const duration = Math.max(900, 2000 - state.ballsLaunched * 65);
+    ball.addEventListener('click', () => {
+      if (ball.classList.contains('clicked')) return;
+      ball.classList.add('clicked');
+      state.ballsHit++;
+      updateGameUI();
+      setTimeout(() => { if(ball.parentNode) ball.parentNode.removeChild(ball); }, 260);
+    });
+    arena.appendChild(ball);
+    const missTimer = setTimeout(() => {
+      if (!ball.parentNode || ball.classList.contains('clicked')) return;
+      state.ballsMissed++;
+      updateGameUI();
+      ball.style.opacity = '0'; ball.style.transform = 'scale(0.5)'; ball.style.transition = '0.3s';
+      setTimeout(() => { if(ball.parentNode) ball.parentNode.removeChild(ball); }, 320);
+      checkGameEnd();
+    }, duration);
+    ballTimers.push(missTimer);
+  }
+
+  function checkGameEnd() {
+    if (state.ballsHit + state.ballsMissed >= state.totalBalls) endGame();
+  }
+
+  function endGame() {
+    state.gameActive    = false;
+    state.gameComplete  = true;
+    state.reactionScore = Math.round((state.ballsHit / state.totalBalls) * 100);
+    const arena = document.getElementById('gameArena');
+    const msg   = document.createElement('div');
+    msg.className = 'arena-idle';
+    msg.innerHTML = `
+      <span style="font-size:2.5rem;">${state.ballsHit>=12?'🏆':state.ballsHit>=8?'🎯':'😤'}</span>
+      <p style="color:#fff;font-size:1.05rem;font-weight:700;">${t('game_complete')}</p>
+      <p>${t('game_you_hit')} <strong style="color:var(--teal-lt)">${state.ballsHit}</strong> ${t('game_out_of')} ${state.totalBalls} ${t('game_balls')}</p>
+      <p style="font-size:0.85rem;">${t('game_reaction')} <strong style="color:var(--teal-lt)">${state.reactionScore}%</strong></p>
+    `;
+    arena.appendChild(msg);
+    updateGameUI();
+    updateProgress();
+  }
+
+  function updateGameUI() {
+    document.getElementById('gsHit').textContent  = state.ballsHit;
+    document.getElementById('gsMiss').textContent = state.ballsMissed;
+    const total = state.ballsHit + state.ballsMissed;
+    document.getElementById('gsAcc').textContent  = total > 0 ? Math.round((state.ballsHit/total)*100)+'%' : '—';
+    document.getElementById('gsBalls').textContent = state.ballsLaunched + ' / ' + state.totalBalls;
+    checkGameEnd();
+  }
+
+  function updateProgress() {
+    document.getElementById('gameProgressFill').style.width = (state.ballsLaunched/state.totalBalls*100) + '%';
+  }
+
+  function resetGame() {
+    ballTimers.forEach(t => clearTimeout(t));
+    ballTimers = [];
+    const arena = document.getElementById('gameArena');
+    arena.querySelectorAll('.ball').forEach(b => b.remove());
+    arena.querySelectorAll('.arena-idle').forEach(b => b.remove());
+    state.gameActive    = false;
+    state.gameComplete  = false;
+    state.ballsLaunched = 0;
+    state.ballsHit      = 0;
+    state.ballsMissed   = 0;
+    state.reactionScore = null;
+    const idle = document.createElement('div');
+    idle.className = 'arena-idle';
+    idle.id = 'arenaIdle';
+    idle.innerHTML = `
+      <span style="font-size:2.5rem;">🎯</span>
+      <p><strong style="color:var(--teal-lt)">${t('s2_start_btn')}</strong></p>
+      <p>${t('s2_arena_p2')}</p>
+    `;
+    arena.appendChild(idle);
+    document.getElementById('startBtn').style.display  = 'inline-flex';
+    document.getElementById('resetBtn').style.display  = 'none';
+    document.getElementById('gameProgressFill').style.width = '0';
+    updateGameUI();
+    document.getElementById('gsAcc').textContent = '—';
+  }
+
+  /* =========================================================
+     CALCULATE RESULTS
+     ========================================================= */
+  function calcResults() {
+    const stroopInput = document.getElementById('stroopInput');
+    const calcErr  = document.getElementById('calcErr');
+    const stroopErr = document.getElementById('stroopErr');
+    let valid = true;
+    const stroopVal = parseInt(stroopInput.value, 10);
+    if (isNaN(stroopVal) || stroopVal < 0 || stroopVal > 10) { stroopErr.style.display = 'block'; valid = false; }
+    else { stroopErr.style.display = 'none'; }
+    if (!state.gameComplete) { calcErr.style.display = 'block'; valid = false; }
+    else { calcErr.style.display = 'none'; }
+    if (!valid) return;
+
+    const stroopScore   = Math.round((stroopVal / 10) * 100);
+    const reactionScore = state.reactionScore;
+    const focusScore    = Math.round((stroopScore + reactionScore) / 2);
+    const stressLevel   = 100 - focusScore;
+    const relaxScore    = focusScore;
+
+    state.stroopScore   = stroopScore;
+    state.reactionScore = reactionScore;
+    state.focusScore    = focusScore;
+    state.stressLevel   = stressLevel;
+    state.relaxScore    = relaxScore;
+
+    document.getElementById('stroopScoreVal').textContent   = stroopScore + '%';
+    document.getElementById('reactionScoreVal').textContent = reactionScore + '%';
+    document.getElementById('focusVal').textContent         = focusScore + '%';
+    document.getElementById('stressVal').textContent        = stressLevel + '%';
+    document.getElementById('relaxVal').textContent         = relaxScore + '%';
+
+    document.getElementById('resultsPanel').classList.add('visible');
+    setTimeout(() => {
+      animateBar('focusBar',  focusScore);
+      animateBar('stressBar', stressLevel);
+      animateBar('relaxBar',  relaxScore);
+    }, 80);
+  }
+
+  function animateBar(id, pct) {
+    document.getElementById(id).style.width = pct + '%';
+  }
+
+  /* =========================================================
+     CHECKBOXES
+     ========================================================= */
+  // Store selected values (by English label) so language toggle preserves state
+  const selectedValues = { cbTriggers: new Set(), cbDistractions: new Set(), cbPhysical: new Set() };
+
+  const CB_GROUPS = [
+    { id: 'cbTriggers',     key: 'cb_triggers'     },
+    { id: 'cbDistractions', key: 'cb_distractions' },
+    { id: 'cbPhysical',     key: 'cb_physical'     }
+  ];
+
+  function buildCheckboxes() {
+    CB_GROUPS.forEach(({ id, key }) => {
+      const cont = document.getElementById(id);
+      cont.innerHTML = '';
+      const enItems = T[key].en;
+      const items   = T[key][currentLang] || enItems;
+      items.forEach((label, idx) => {
+        const enLabel = enItems[idx]; // canonical key is always English label
+        const lbl = document.createElement('label');
+        lbl.className = 'cb-item' + (selectedValues[id].has(enLabel) ? ' checked' : '');
+        const checked = selectedValues[id].has(enLabel) ? 'checked' : '';
+        lbl.innerHTML = `<input type="checkbox" value="${enLabel}" ${checked}/><span class="cb-dot"></span>${label}`;
+        lbl.querySelector('input').addEventListener('change', function() {
+          if (this.checked) selectedValues[id].add(enLabel);
+          else               selectedValues[id].delete(enLabel);
+          lbl.classList.toggle('checked', this.checked);
+          updateSummary();
+        });
+        cont.appendChild(lbl);
+      });
+    });
+  }
+
+  function rebuildCheckboxes() {
+    buildCheckboxes();
+  }
+
+  function updateSummary() {
+    const tags = document.getElementById('summaryTags');
+    tags.innerHTML = '';
+    const allSelected = [
+      ...selectedValues.cbTriggers,
+      ...selectedValues.cbDistractions,
+      ...selectedValues.cbPhysical
+    ];
+    if (allSelected.length === 0) {
+      tags.innerHTML = `<span class="empty-note">${t('s3_empty')}</span>`;
+      return;
+    }
+    // Translate selected English labels to current language for display
+    allSelected.forEach(enLabel => {
+      const span = document.createElement('span');
+      span.className = 'tag';
+      span.textContent = getTranslatedLabel(enLabel);
+      tags.appendChild(span);
+    });
+    refreshFactorCount();
+  }
+
+  function getTranslatedLabel(enLabel) {
+    // Search all checkbox groups for this English label and return translated version
+    for (const { key } of CB_GROUPS) {
+      const enItems = T[key].en;
+      const idx = enItems.indexOf(enLabel);
+      if (idx !== -1) {
+        return (T[key][currentLang] || enItems)[idx];
+      }
+    }
+    return enLabel;
+  }
+
+  function refreshFactorCount() {
+    const count = selectedValues.cbTriggers.size + selectedValues.cbDistractions.size + selectedValues.cbPhysical.size;
+    document.getElementById('d-factors').textContent   = count;
+    document.getElementById('factorCount').textContent = count;
+    const pct = Math.min(count / 15, 1);
+    animateRing('ring-factors', pct, '#9b59d4');
+  }
+
+  /* =========================================================
+     DASHBOARD
+     ========================================================= */
+  function refreshDashboard() {
+    refreshFactorCount();
+    const { focusScore, stressLevel, relaxScore } = state;
+    if (focusScore === null) return;
+    updateDashSub();
+    document.getElementById('d-focus').textContent  = focusScore;
+    document.getElementById('d-stress').textContent = stressLevel;
+    document.getElementById('d-relax').textContent  = relaxScore;
+    document.getElementById('db-focus').textContent  = focusScore  + '%';
+    document.getElementById('db-stress').textContent = stressLevel + '%';
+    document.getElementById('db-relax').textContent  = relaxScore  + '%';
+    setTimeout(() => {
+      animateBar('db-focusBar',  focusScore);
+      animateBar('db-stressBar', stressLevel);
+      animateBar('db-relaxBar',  relaxScore);
+      animateRing('ring-focus',  focusScore  / 100, 'var(--purple-lt)');
+      animateRing('ring-stress', stressLevel / 100, '#ef5350');
+      animateRing('ring-relax',  relaxScore  / 100, 'var(--teal)');
+    }, 120);
+    updateRecBox();
+  }
+
+  function updateDashSub() {
+    const { focusScore } = state;
+    if (focusScore === null) return;
+    document.getElementById('dashSub').textContent =
+      t('dash_sub_score') + ' ' + focusScore + '%.';
+  }
+
+  function updateRecBox() {
+    const { focusScore } = state;
+    if (focusScore === null) return;
+    let key = focusScore > 80 ? 'rec_high' : focusScore >= 60 ? 'rec_mid' : 'rec_low';
+    document.getElementById('recBox').innerHTML = t(key);
+  }
+
+  function animateRing(id, fraction, color) {
+    const deg = Math.round(fraction * 360);
+    document.getElementById(id).style.background =
+      `conic-gradient(${color} ${deg}deg, rgba(255,255,255,0.1) ${deg}deg)`;
+  }
+
+  /* =========================================================
+     INIT
+     ========================================================= */
+  document.addEventListener('DOMContentLoaded', () => {
+    renderStroop();
+    buildCheckboxes();
+    // Set initial lang button states (English active)
+    setLang('en');
+  });
+</script>
+
+</body>
+</html>
